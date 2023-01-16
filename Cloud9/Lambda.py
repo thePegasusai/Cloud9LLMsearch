@@ -10,4 +10,21 @@ def lambda_handler(event, context):
     es = boto3.client('es')
     
     # Run the search query
-    response = es.search
+    response = es.search(
+        index='my-search-index',
+        body={
+            'query': {
+                'match': {
+                    '_all': query
+                }
+            }
+        }
+    )
+    
+    # Format the search results
+    results = []
+    for hit in response['hits']['hits']:
+        results.append(hit['_source'])
+    
+    # Return the search results to the user
+    return {'results': results}
